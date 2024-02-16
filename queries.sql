@@ -15,12 +15,46 @@ JOIN fact_events AS fe ON ds.store_id = fe.store_id
 GROUP BY ds.city
 ORDER BY number_of_stores DESC;
 
+-- Correcting quanitity_sold(after_promo) for BOGOF type
+
+ALTER TABLE fact_events
+ADD COLUMN `quantity_sold(after_promo_updated)` INT;
+
+UPDATE fact_events
+SET `quantity_sold(after_promo_updated)` = CASE
+                            WHEN promo_type = 'BOGOF' THEN `quantity_sold(after_promo)` * 2
+                            ELSE `quantity_sold(after_promo)`
+                        END
+WHERE event_id IS NOT NULL; 
+
+-- Adding columns  revenue before promo and after promo
+
+ALTER TABLE fact_events
+ADD COLUMN `revenue(before_promo)` float;
+
+UPDATE fact_events
+SET `revenue(before_promo)` = `base_price`*`quantity_sold(before_promo)`
+WHERE event_id IS NOT NULL; 
+
+ALTER TABLE fact_events
+ADD COLUMN `revenue(after_promo)` float;
+
+UPDATE fact_events
+SET `revenue(after_promo)` = CASE 
+	WHEN promo_type='BOGOF' THEN `base_price`*`quantity_sold(after_promo_updated)`*0.5
+	WHEN promo_type='50% OFF' THEN `base_price`*`quantity_sold(after_promo_updated)`*0.5
+	WHEN promo_type='25% OFF' THEN `base_price`*`quantity_sold(after_promo_updated)`*0.75
+	WHEN promo_type='33% OFF' THEN `base_price`*`quantity_sold(after_promo_updated)`*0.67
+	ELSE ((`base_price`*`quantity_sold(after_promo_updated)`) - 500)
+	END
+WHERE event_id IS NOT NULL; 
+
 -- Q3) Calcualte the total revenue before and after promotion by campaign name
 
 SELECT dc.campaign_name,
-       SUM(fe.`base_price` * fe.`quantity_sold(before_promo)`)/1000000 AS total_revenue_before_promotion,
-       SUM(fe.`base_price` * fe.`quantity_sold(after_promo)`)/1000000  AS total_revenue_after_promotion,
-       SUM(fe.`base_price` * fe.`quantity_sold(after_promo)`)/1000000 -SUM(fe.`base_price` * fe.`quantity_sold(before_promo)`)/1000000  AS Incremental_Revenue
+       ROUND(SUM(fe.`revenue(before_promo)`)/1000000,2) as Revenue_before_promo_in_Millions,
+       ROUND(SUM(fe.`revenue(after_promo)`)/1000000,2) as Revenue_after_promo_in_Millions,
+      ROUND(SUM(fe.`revenue(after_promo)`-fe.`revenue(before_promo)`)/1000000,2) as Incremental_Revenue_in_Millions
 FROM fact_events AS fe
 JOIN dim_campaigns AS  dc ON fe.campaign_id = dc.campaign_id
 GROUP BY dc.campaign_name;
@@ -30,7 +64,7 @@ GROUP BY dc.campaign_name;
 WITH top_category AS (
     SELECT 
         dp.category,
-        100 * (SUM(fe.`quantity_sold(after_promo)` - fe.`quantity_sold(before_promo)`)) / NULLIF(SUM(fe.`quantity_sold(before_promo)`), 0) AS incremental_units_sold_percentage
+        100 * (SUM(fe.`quantity_sold(after_promo_updated)` - fe.`quantity_sold(before_promo)`)) / SUM(fe.`quantity_sold(before_promo)`) AS incremental_units_sold_percentage
     FROM fact_events AS fe
     JOIN dim_products AS dp ON fe.product_code=dp.product_code
     WHERE fe.campaign_id="CAMP_DIW_01"
@@ -47,7 +81,7 @@ FROM top_category;
 with top_products as (
 	select 
 		dp.product_name,
-        100*(SUM((fe.`quantity_sold(after_promo)` - fe.`quantity_sold(before_promo)`)*fe.`base_price`)/SUM((fe.`quantity_sold(before_promo)`)*fe.`base_price`)) AS incremental_revenue_percentage
+		100*(sum(fe.`revenue(after_promo)`-fe.`revenue(before_promo)`)/SUM(fe.`revenue(before_promo)`)) AS incremental_revenue_percentage
 	from fact_events as fe
     join dim_products as dp on fe.product_code=dp.product_code
     group by dp.product_name
