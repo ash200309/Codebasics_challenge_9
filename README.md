@@ -1,4 +1,6 @@
 ## Codebasics Resume Project Challenge #9
 #### Atliq Sales and Promotion Dashboard & report
 
-<p></p>
+<p>
+  <img src="https://github.com/ash200309/Codebasics_challenge_9/cover.png">
+</p>
