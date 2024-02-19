@@ -6,7 +6,7 @@
 <br>
 <a href="https://www.canva.com/design/DAF8jsm87oo/QlGLGorHgi649EIGjDYUeQ/edit?utm_content=DAF8jsm87oo&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton" target="_blank"> Presentation Link </a>
 <p>
-  <a href="">
+  <a href="https://app.powerbi.com/view?r=eyJrIjoiYjI5OGIwMzktNzZiZC00ZTRmLWJhOGEtZjc0Zjg1Y2U3NzE2IiwidCI6ImRmODY3OWNkLWE4MGUtNDVkOC05OWFjLWM4M2VkN2ZmOTVhMCJ9">
   <img src="https://github.com/ash200309/Codebasics_challenge_9/blob/main/cover.png">
   </a>
 </p>
