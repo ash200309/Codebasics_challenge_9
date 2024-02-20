@@ -1,5 +1,6 @@
 ## Codebasics Resume Project Challenge #9
 #### Atliq Sales and Promotion Dashboard & report
+The objective of this report is to analyze the sales and promotion data for Diwali 2023 and Sankranti 2024 of Atliq Mart. The insights derived from this analysis aim to assist the sales director in making informed decisions for the upcoming promotional period
 
 <a href="https://www.linkedin.com/posts/ansh-arora-1648a4226_codebasics-iamscamaware-data-activity-7162844428523483136--II1?utm_source=share&utm_medium=member_desktop" target="_blank">Video presentation on LinkedIn</a>
 <br>
