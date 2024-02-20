@@ -77,17 +77,12 @@ SELECT
 FROM top_category;
 
 -- Q5) Top 5 products ranked by Incremental Revenue %
-with top_products as (
-select 
-	product_name,
+SELECT product_name,
 	100*(sum(`revenue(after_promo)`-`revenue(before_promo)`)/SUM(`revenue(before_promo)`)) AS incremental_revenue_percentage
-from fact_events
-join dim_products using (product_code)
-group by product_name
-)
-select product_name,incremental_revenue_percentage
-from top_products
-order by incremental_revenue_percentage desc
+FROM fact_events
+JOIN dim_products USING (product_code)
+GROUP BY product_name
+ORDER BY incremental_revenue_percentage DESC
 LIMIT 5;
 
 -- END
