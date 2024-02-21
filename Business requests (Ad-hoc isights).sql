@@ -47,7 +47,7 @@ SET `revenue(after_promo)` =
 		WHEN promo_type='50% OFF' THEN `base_price`*`quantity_sold(after_promo_updated)`*0.5
 		WHEN promo_type='25% OFF' THEN `base_price`*`quantity_sold(after_promo_updated)`*0.75
 		WHEN promo_type='33% OFF' THEN `base_price`*`quantity_sold(after_promo_updated)`*0.67
-		ELSE ((`base_price`*`quantity_sold(after_promo_updated)`) - 500)
+		ELSE ((`base_price`-500)*`quantity_sold(after_promo_updated)`)
 	END
 WHERE event_id IS NOT NULL; 
 
